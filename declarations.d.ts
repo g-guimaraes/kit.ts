@@ -37,6 +37,12 @@ declare module '*.svg' {
   export default _;
 }
 
+declare module '*.gql' {
+  import {DocumentNode} from 'graphql';
+  const _: DocumentNode;
+  export default _;
+}
+
 declare module 'boxen' {
   export interface BoxenOptions {
     padding?: number;

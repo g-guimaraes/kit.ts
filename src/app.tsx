@@ -1,12 +1,14 @@
 // ----------------------
 // IMPORTS
 
+/* NPM */
+
 // React
 import * as React from 'react';
 import { SFC } from 'react';
 
 // GraphQL
-import { gql, graphql } from 'react-apollo';
+import { graphql } from 'react-apollo';
 
 // Routing
 import {
@@ -20,8 +22,14 @@ import {
 // <Helmet> component for setting the page title
 import Helmet from 'react-helmet';
 
+/* Local */
+
 // NotFound 404 handler for unknown routes
 import { NotFound, Redirect } from 'kit/lib/routing';
+
+// GraphQL queries
+import allMessages from 'src/queries/all_messages.gql';
+import { AllMessagesQuery } from 'src/schema';
 
 // Styles
 import './styles.global.css';
@@ -77,43 +85,15 @@ const Stats = () => {
 
 // Now, let's create a GraphQL-enabled component...
 
-// First, create the GraphQL query that we'll use to request data from our
-// sample endpoint
-const query = gql`
-  query {
-    allMessages(first:1) {
-      text
-    }
-  }
-`;
-
-interface MessageData {
-  allMessages?: Array<{
-    text: string;
-  }>;
-}
-
 // ... then, let's create the component and decorate it with the `graphql`
 // HOC that will automatically populate `this.props` with the query data
 // once the GraphQL API request has been completed
-// @graphql(query)
-// class GraphQLMessage extends React.PureComponent<any, any> {
-
-//   render() {
-//     const message = this.props.data.allMessages && this.props.data.allMessages![0].text;
-//     const isLoading = this.props.data.loading ? 'yes' : 'nope';
-//     return (
-//       <div>
-//         <h2>Message from GraphQL server: <em>{message}</em></h2>
-//         <h2>Currently loading?: {isLoading}</h2>
-//       </div>
-//     );
-//   }
-// };
-
-const GraphQLMessage = graphql<MessageData>(query)(({ data }) => {
-  const message = data!.allMessages && data!.allMessages![0].text;
-  const isLoading = data!.loading ? 'yes' : 'nope';
+const GraphQLMessage = graphql<AllMessagesQuery>(allMessages)(({data}) => {
+  if (!data) {
+    return null;
+  }
+  const message = data.allMessages && data.allMessages[0].text;
+  const isLoading = data.loading ? 'yes' : 'nope';
   return (
     <div>
       <h2>Message from GraphQL server: <em>{message}</em></h2>
